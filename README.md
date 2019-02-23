@@ -1,14 +1,14 @@
 # Finetune Bert for Chinese
 NLP 问题被证明同图像一样，可以通过 finetune 在垂直领域取得效果的提升。Bert 模型本身极其依赖计算资源，从 0 训练对大多数开发者都是难以想象的事。在节省资源避免重头开始训练的同时，为更好的拟合垂直领域的语料，我们有了 finetune 的动机。
 
-Bert 的文档本身对 finetune 进行了较为详细的描述，但对于不熟悉官方标准数据集的工程师来说，有一定的上手难度。随着 Bert as service 代码的开源，使用 Bert 分类或阅读理解的副产物--词空间，成为一个更具实用价值的方向。
+[Bert](https://github.com/google-research/bert) 的文档本身对 finetune 进行了较为详细的描述，但对于不熟悉官方标准数据集的工程师来说，有一定的上手难度。随着 [Bert as service](https://github.com/hanxiao/bert-as-service) 代码的开源，使用 Bert 分类或阅读理解的副产物--词空间，成为一个更具实用价值的方向。
 
 因而，此文档着重以一个例子，梳理 **finetune 垂直语料，获得微调后的模型** 这一过程。Bert 原理或 Bert as service 还请移步官方文档。 
 
 ## 依赖
 ``` bash
 python==3.6
-tensorflow==1.11.0
+tensorflow>=1.11.0
 ```
 
 ### 预训练模型
@@ -23,12 +23,14 @@ tensorflow==1.11.0
 
 #### 数据格式
 
-第一列为 label，第二列为具体内容，tab 分隔。数据格式取决于业务场景，后面也可根据格式调整代码里的数据导入方式。
+第一列为 label，第二列为具体内容，tab 分隔。
 ``` csv
 fashion	衬衫和它一起穿,让你减龄十岁!越活越年轻!太美了!...
 houseliving	95㎡简约美式小三居,过精美别致、悠然自得的小日子! 屋主的客...
 game	赛季末用他们两天上一段，7.20最强LOL上分英雄推荐！ 各位小伙...
 ```
+样例数据位置：[data](https://github.com/kuhung/bert_finetune/data)
+数据格式取决于业务场景，后面也可根据格式调整代码里的数据导入方式。
 
 ## 操作 
 
@@ -60,9 +62,16 @@ class DemoProcessor(DataProcessor):
         return self._create_examples(
             self._read_tsv(os.path.join(data_dir, "dev.tsv")), "dev")
 
+    def get_test_examples(self, data_dir):
+      """See base class."""
+      return self._create_examples(
+          self._read_tsv(os.path.join(data_dir, "test.tsv")), "test")
+
     def get_labels(self):
         """See base class."""
-        return list(self.labels)
+        # return list(self.labels)
+        return ["fashion", "houseliving","game"] # 根据 label 自定义
+
 
     def _create_examples(self, lines, set_type):
         """Creates examples for the training and dev sets."""
@@ -121,7 +130,11 @@ python run_classifier.py \
 
 最终，微调后的模型保存在**output_dir**指向的文件夹中。
 
+## 总结
+
+Bert 预训练后的 finetune，是一种很高效的方式，节省时间，同时提高模型在垂直语料的表现。finetune 过程，实际上不难。较大的难点在于数据准备和 pipeline 的设计。从商业角度讲，应着重考虑 finetune 之后，模型有效性的证明，以及在业务场景中的应用。如果评估指标和业务场景都已缕清，那么不妨一试。
+
 # 参考资料
 
-https://github.com/NLPScott/bert-Chinese-classification-task
-https://www.jianshu.com/p/aa2eff7ec5c1
+- https://github.com/NLPScott/bert-Chinese-classification-task
+- https://www.jianshu.com/p/aa2eff7ec5c1
