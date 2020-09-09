@@ -139,3 +139,4 @@ Bert 预训练后的 finetune，是一种很高效的方式，节省时间，同
 
 - https://github.com/NLPScott/bert-Chinese-classification-task
 - https://www.jianshu.com/p/aa2eff7ec5c1
+- https://github.com/kuhung/bert_finetune
