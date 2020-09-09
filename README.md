@@ -102,22 +102,20 @@ class DemoProcessor(DataProcessor):
 
 ## 启动训练
 ``` shell
-export BERT_Chinese_DIR=/path/to/bert/chinese_L-12_H-768_A-12
-export Demo_DIR=/path/to/DemoDate
-
-python run_classifier.py \
+/home/rd/.conda/envs/tonysu_tensorflow-1/bin/python run_classifier.py \
   --task_name=demo \
   --do_train=true \
   --do_eval=true \
-  --data_dir=$Demo_DIR \
-  --vocab_file=$BERT_Chinese_DIR/vocab.txt \
-  --bert_config_file=$BERT_Chinese_DIR/bert_config.json \
-  --init_checkpoint=$BERT_Chinese_DIR/bert_model.ckpt \
+  --data_dir=/data/user/tonysu/bert_finetune/data/data_v2 \
+  --vocab_file=/data/user/tonysu/bert_model/chinese_L-12_H-768_A-12/vocab.txt \
+  --bert_config_file=/data/user/tonysu/bert_model/chinese_L-12_H-768_A-12/bert_config.json \
+  --init_checkpoint=/data/user/tonysu/bert_model/chinese_L-12_H-768_A-12/bert_model.ckpt \
   --max_seq_length=128 \
   --train_batch_size=32 \
   --learning_rate=2e-5 \
   --num_train_epochs=3.0 \
-  --output_dir=/tmp/Demo_output/
+  --output_dir=/data/user/tonysu/bert_model/finetune
+
 ```
 若一切顺利，将会有以下输出:
 
@@ -130,6 +128,20 @@ python run_classifier.py \
 ```
 
 最终，微调后的模型保存在**output_dir**指向的文件夹中。
+
+## 使用fine-tune结果预测
+```shell
+/home/rd/.conda/envs/tonysu_tensorflow-1/bin/python run_classifier.py \
+  --task_name=demo \
+  --do_predict=true \
+  --data_dir=/data/user/tonysu/bert_finetune/data/data_v2 \
+  --vocab_file=/data/user/tonysu/bert_model/chinese_L-12_H-768_A-12/vocab.txt \
+  --bert_config_file=/data/user/tonysu/bert_model/chinese_L-12_H-768_A-12/bert_config.json \
+  --init_checkpoint=/data/user/tonysu/bert_model/finetune \
+  --max_seq_length=128 \
+  --output_dir=/data/user/tonysu
+
+```
 
 ## 总结
 
